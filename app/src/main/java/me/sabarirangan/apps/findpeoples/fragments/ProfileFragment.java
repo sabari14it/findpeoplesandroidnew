@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -30,7 +31,22 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.ObjectChangeSet;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmModel;
+import io.realm.RealmObjectChangeListener;
+import io.realm.RealmResults;
+import me.sabarirangan.apps.findpeoples.Adapter.MyProjectRVAdapter;
+import me.sabarirangan.apps.findpeoples.Adapter.PostRecyclerViewAdapter;
+import me.sabarirangan.apps.findpeoples.Adapter.TagAdapter;
 import me.sabarirangan.apps.findpeoples.R;
+import me.sabarirangan.apps.findpeoples.activities.NewPostTagsActivity;
+import me.sabarirangan.apps.findpeoples.extras.FindPeoplesAPI;
+import me.sabarirangan.apps.findpeoples.model.Project;
+import me.sabarirangan.apps.findpeoples.model.Tags;
+import me.sabarirangan.apps.findpeoples.model.UserProfile;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -45,106 +61,92 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ProfileFragment extends Fragment {
-//    public SkillsRecyclerViewAdapter adapter;
-//    MyProjectRVAdapter projectadapter;
-//    TextView username;
-//    RecyclerView skillrv;
-//    PermissionsChecker checker;
-//    RecyclerView projectrv;
-//    public String imagePath;
-//    public CircularImageView imageView;
-//    private ImageButton editskills;
-//    public ArrayList<ProjectTitle> projects=new ArrayList<>();
-//    public ArrayList<Skill> skills=new ArrayList<>();
-//    private static final String[] PERMISSIONS_READ_STORAGE = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
-//    SpacingItemDecoration space;
-//    ChipsLayoutManager spanLayoutManager;
+    public TagAdapter adapter;
+    MyProjectRVAdapter projectadapter;
+    TextView username;
+    RecyclerView skillrv;
+    RecyclerView projectrv;
+    public CircularImageView imageView;
+    private ImageButton editskills;
+    public RealmResults<Project> projects;
+    public UserProfile userProfile;
+    private Realm realm;
+//
+    SpacingItemDecoration space;
+    ChipsLayoutManager spanLayoutManager;
 
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        realm=Realm.getDefaultInstance();
+        projects=realm.where(Project.class).findAll();
+        projectadapter=new MyProjectRVAdapter(projects);
 //        if (savedInstanceState == null||(savedInstanceState!=null&&savedInstanceState.size()==0)) {
 //            adapter = new SkillsRecyclerViewAdapter((ArrayList<Skill>) skills);
 //            projectadapter = new MyProjectRVAdapter((ArrayList<ProjectTitle>) projects);
 //            getPrjects();
 //            getSkills();
 //        }
-//    }
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_profile,container,false);
-        /*username= (TextView) v.findViewById(R.id.username);
+        username= (TextView) v.findViewById(R.id.username);
         imageView=(CircularImageView)v.findViewById(R.id.profile_pic);
+        getUserProfile();
+        getProjects();
         skillrv=(RecyclerView)v.findViewById(R.id.skillsrv);
         projectrv=(RecyclerView)v.findViewById(R.id.userpostrv);
         spanLayoutManager = ChipsLayoutManager.newBuilder(getContext())
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
                 .build();
-        checker = new PermissionsChecker(getContext());
         space=new SpacingItemDecoration(getContext().getResources().getDimensionPixelOffset(R.dimen.item_space),getContext().getResources().getDimensionPixelOffset(R.dimen.item_space));
         skillrv.addItemDecoration(space);
         editskills= (ImageButton) v.findViewById(R.id.editskills);
         editskills.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(getContext(), NewPostTagsActivity.class);
+                Intent i = new Intent(getContext(), NewPostTagsActivity.class);
                 i.setAction("editskills");
-                ArrayList<String> skilllist=new ArrayList<String>();
-                for(Skill s:skills){
+                ArrayList<String> skilllist = new ArrayList<String>();
+                for (Tags s : userProfile.getSkills()) {
                     skilllist.add(s.getName());
                 }
-                i.putExtra("skills",skilllist);
-                startActivityForResult(i,1);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checker.lacksPermissions(PERMISSIONS_READ_STORAGE)) {
-                    startPermissionsActivity(PERMISSIONS_READ_STORAGE);
-                } else {
-                    // File System.
-                    final Intent galleryIntent = new Intent();
-                    galleryIntent.setType("image*//*");
-                    galleryIntent.setAction(Intent.ACTION_PICK);
-
-                    // Chooser of file system options.
-                    final Intent chooserIntent = Intent.createChooser(galleryIntent, getString(R.string.string_choose_image));
-                    startActivityForResult(chooserIntent, 1010);
-                }
-            }
-        });
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
-        Call<Avatar> call=findPeoplesAPI.getProfilePic(Prefs.getString("token","abcd"));
-        call.enqueue(new Callback<Avatar>() {
-            @Override
-            public void onResponse(Call<Avatar> call, Response<Avatar> response) {
-                Log.d("pic",Constants.BASE_URL+response.body().getAvatar());
-                Picasso.with(getActivity())
-                        .load(Constants.BASE_URL+response.body().getAvatar())
-                        .into(imageView);
+                i.putExtra("skills", skilllist);
+                startActivityForResult(i, 1);
+                getUserProfile();
+                adapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onFailure(Call<Avatar> call, Throwable t) {
-
-            }
         });
+
+
+
         projectrv.setAdapter(projectadapter);
         projectrv.setLayoutManager(new LinearLayoutManager(getContext()));
         projectrv.setItemAnimator(new DefaultItemAnimator());
+        realm=Realm.getDefaultInstance();
+        if(Prefs.contains("userprofileid")){
+            userProfile=realm.where(UserProfile.class).equalTo("id",Prefs.getInt("userprofileid",1)).findFirst();
+            adapter=new TagAdapter(userProfile.getSkills());
+            userProfile.addChangeListener(new RealmChangeListener<UserProfile>() {
+                @Override
+                public void onChange(UserProfile element) {
+                    adapter.notifyDataSetChanged();
+                }
+            });
+
+        }
         skillrv.setAdapter(adapter);
         //Toast.makeText(getContext(), Integer.toString(skills.size())+Integer.toString(projects.size()),Toast.LENGTH_LONG).show();
         skillrv.addItemDecoration(space);
         skillrv.setLayoutManager(spanLayoutManager);
         skillrv.getRecycledViewPool().setMaxRecycledViews(0, 10);
-        skillrv.getRecycledViewPool().setMaxRecycledViews(1, 10);*/
+        skillrv.getRecycledViewPool().setMaxRecycledViews(1, 10);
+
         return v;
     }
 
@@ -154,6 +156,7 @@ public class ProfileFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisible()){
             if(isVisibleToUser){
+                getUserProfile();
                 Log.d("MyTag","Profile Fragment is visible");
             }else{
                 //Log.d("MyTag","Profile Fragment is not visible");
@@ -254,52 +257,56 @@ public class ProfileFragment extends Fragment {
 //        });
 //    }
 //
-//    private void getPrjects() {
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(Constants.BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
-//        Call<List<ProjectTitle>> call=findPeoplesAPI.getMyProjects(Prefs.getString("token",""));
-//        call.enqueue(new Callback<List<ProjectTitle>>() {
-//            @Override
-//            public void onResponse(Call<List<ProjectTitle>> call, Response<List<ProjectTitle>> response) {
-//                projects= (ArrayList<ProjectTitle>) response.body();
-//                projectadapter.notifyDataSetChanged();
-//                //Toast.makeText(getContext(),response.body().get(0).getName(),Toast.LENGTH_LONG).show();
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<ProjectTitle>> call, Throwable t) {
-//                Toast.makeText(getContext(),"failure",Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
-//
-//    private void getSkills() {
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(Constants.BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
-//        Call<List<Skill>> call=findPeoplesAPI.getUserSkills(Prefs.getString("token",""));
-//        call.enqueue(new Callback<List<Skill>>() {
-//            @Override
-//            public void onResponse(Call<List<Skill>> call, Response<List<Skill>> response) {
-//
-//                    skills = (ArrayList<Skill>) response.body();
-//                    adapter.notifyDataSetChanged();
-//                    //Toast.makeText(getContext(),response.body().get(0).getName(),Toast.LENGTH_LONG).show();
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Skill>> call, Throwable t) {
-//                Toast.makeText(getContext(),"failure",Toast.LENGTH_LONG).show();
-//            }
-//        });
-//
-//    }
+    private void getProjects() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+        Call<List<Project>> call=findPeoplesAPI.getMyProjects(Prefs.getString("token",""));
+        call.enqueue(new Callback<List<Project>>() {
+            @Override
+            public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
+                //Toast.makeText(getContext(),response.body().get(0).getName(),Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Project>> call, Throwable t) {
+                Toast.makeText(getContext(),"failure",Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getUserProfile() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+        Call<UserProfile> call=findPeoplesAPI.getUserProfile(Prefs.getString("token","ssdd"));
+        call.enqueue(new Callback<UserProfile>() {
+            @Override
+            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+                realm.beginTransaction();
+                userProfile=realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
+                Prefs.putInt("userprofileid",userProfile.getId());
+                username.setText(userProfile.getUser().getUsername());
+                Picasso.with(getActivity())
+                        .load(userProfile.getAvatar())
+                        .into(imageView);
+            }
+
+            @Override
+            public void onFailure(Call<UserProfile> call, Throwable t) {
+
+            }
+        });
+
+    }
 
 }

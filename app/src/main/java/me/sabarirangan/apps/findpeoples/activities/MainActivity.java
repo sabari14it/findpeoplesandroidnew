@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent i=new Intent(MainActivity.this, NewPost.class);
-                //startActivity(i);
+                Intent i=new Intent(MainActivity.this, NewPost.class);
+                startActivity(i);
             }
         });
     }

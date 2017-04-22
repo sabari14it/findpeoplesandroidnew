@@ -2,7 +2,11 @@ package me.sabarirangan.apps.findpeoples.extras;
 
 import java.util.List;
 
+import me.sabarirangan.apps.findpeoples.model.NewProject;
 import me.sabarirangan.apps.findpeoples.model.Project;
+import me.sabarirangan.apps.findpeoples.model.Result;
+import me.sabarirangan.apps.findpeoples.model.Tags;
+import me.sabarirangan.apps.findpeoples.model.UserProfile;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -44,6 +48,16 @@ public interface FindPeoplesAPI {
     Call<Token> loginUser(@Body Token user);
     @GET("api/projects/")
     Call<List<Project>> getProjectList(@Header("Authorization") String s);
+    @GET("api/userprofile/")
+    Call<UserProfile> getUserProfile(@Header("Authorization")String s);
+    @GET("api/myprojects/")
+    Call<List<Project>> getMyProjects(@Header("Authorization")String s);
+    @GET("api/tags/0")
+    Call<List<Tags>> getTags(@Header("Authorization")String s);
+    @POST("api/editskills/")
+    Call<Result> editSkills(@Header("Authorization")String s, @Body List<String> t);
+    @POST("api/projects/")
+    Call<Result>postProject(@Header("Authorization") String s,@Body NewProject brief);
 //    @GET("tags/0/")
 //    Call<List<Skill>> getUserSkills(@Header("Authorization") String s);
 //    @POST("projects/")

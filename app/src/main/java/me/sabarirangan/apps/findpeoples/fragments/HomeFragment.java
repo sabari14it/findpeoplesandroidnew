@@ -1,5 +1,6 @@
 package me.sabarirangan.apps.findpeoples.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Handler;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -26,7 +28,9 @@ import io.realm.Sort;
 import me.sabarirangan.apps.findpeoples.Adapter.PostRecyclerViewAdapter;
 import me.sabarirangan.apps.findpeoples.R;
 import me.sabarirangan.apps.findpeoples.activities.MainActivity;
+import me.sabarirangan.apps.findpeoples.activities.NewPost;
 import me.sabarirangan.apps.findpeoples.extras.FindPeoplesAPI;
+import me.sabarirangan.apps.findpeoples.extras.OnLoadMoreListener;
 import me.sabarirangan.apps.findpeoples.model.Project;
 import me.sabarirangan.apps.findpeoples.model.Tags;
 import retrofit2.Call;
@@ -42,7 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HomeFragment extends Fragment {
 
     private Realm realm;
-
+    protected Handler handler;
 
     PostRecyclerViewAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -53,6 +57,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPosts();
+        handler = new Handler();
     }
 
     @Nullable
@@ -62,10 +67,10 @@ public class HomeFragment extends Fragment {
         realm = Realm.getDefaultInstance();
         RealmResults<Project> projects=realm.where(Project.class).findAll().sort("created_at", Sort.DESCENDING);
 
-        UltimateRecyclerView recyclerView=(UltimateRecyclerView) v.findViewById(R.id.post_recycler_view);
+        RecyclerView recyclerView=(RecyclerView)v.findViewById(R.id.post_recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
 
-        adapter=new PostRecyclerViewAdapter(projects,getContext());
+        adapter=new PostRecyclerViewAdapter(projects,recyclerView,getContext());
         recyclerView.setAdapter(adapter);
         projects.addChangeListener(new RealmChangeListener<RealmResults<Project>>() {
             @Override
@@ -85,25 +90,40 @@ public class HomeFragment extends Fragment {
         final LinearLayoutManager line=new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(line);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        firstVisibleInListview = line.findFirstVisibleItemPosition();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    ((MainActivity)getActivity()).findViewById(R.id.newpost).setVisibility(View.GONE);
-                } else {
-                    ((MainActivity)getActivity()).findViewById(R.id.newpost).setVisibility(View.VISIBLE);
-                }
-            }
+            public void onLoadMore() {
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
 
+                    }
+                }, 2000);
 
             }
         });
+
+
+        firstVisibleInListview = line.findFirstVisibleItemPosition();
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy > 0) {
+//                    ((MainActivity)getActivity()).findViewById(R.id.newpost).setVisibility(View.GONE);
+//                } else {
+//                    ((MainActivity)getActivity()).findViewById(R.id.newpost).setVisibility(View.VISIBLE);
+//                }
+//            }
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//
+//
+//            }
+//        });
         return v;
     }
 
