@@ -288,9 +288,12 @@ public class ProfileFragment extends Fragment {
                 .build();
         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
         Call<UserProfile> call=findPeoplesAPI.getUserProfile(Prefs.getString("token","ssdd"));
+        Log.d("sabari",Prefs.getString("token","ssdd"));
         call.enqueue(new Callback<UserProfile>() {
             @Override
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+
+
                 realm.beginTransaction();
                 userProfile=realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();

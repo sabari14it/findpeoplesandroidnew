@@ -1,12 +1,15 @@
 package me.sabarirangan.apps.findpeoples.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by sabari on 20-04-2017.
  */
 
 public class Comment extends RealmObject{
+    @PrimaryKey
+    private String id;
     private String content;
     private String created_at;
     private Review review;

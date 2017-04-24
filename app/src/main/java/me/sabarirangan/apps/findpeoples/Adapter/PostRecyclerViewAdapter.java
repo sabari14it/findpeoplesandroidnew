@@ -31,8 +31,12 @@ import java.util.List;
 
 
 import me.sabarirangan.apps.findpeoples.R;
+import me.sabarirangan.apps.findpeoples.activities.ProjectDetail;
+import me.sabarirangan.apps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.apps.findpeoples.extras.OnLoadMoreListener;
+import me.sabarirangan.apps.findpeoples.model.NewReview;
 import me.sabarirangan.apps.findpeoples.model.Project;
+import me.sabarirangan.apps.findpeoples.model.Result;
 import me.sabarirangan.apps.findpeoples.model.Tags;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -177,6 +181,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             ((PostViewHolder)holder).description.setText(s);
             ((PostViewHolder)holder).user.setText(p.getUser().getUser().getUsername());
             ((PostViewHolder)holder).like.setTag(false);
+            ((PostViewHolder)holder).unlike.setTag(false);
             TagAdapter adapter = new TagAdapter(p.getTags());
             Picasso.with(context)
                     .load(p.getUser().getAvatar())
@@ -185,90 +190,142 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
 
             ((PostViewHolder)holder).tagrv.setAdapter(adapter);
+            ((PostViewHolder)holder).readmore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent i=new Intent(view.getContext(), ProjectDetail.class);
+                    i.putExtra("projectid",p.getId());
+                    view.getContext().startActivity(i);
+                }
+            });
+            ((PostViewHolder)holder).like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if( (!(Boolean)view.getTag()) ){
+                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_thumb_up_black_18dp);
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(context.getString(R.string.base_url))
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+                        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+                        NewReview review=new NewReview();
+                        review.setComment("");
+                        review.setRating(4);
+                        Call<Result> call=findPeoplesAPI.postReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
+                        call.enqueue(new Callback<Result>() {
+                            @Override
+                            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Result> call, Throwable t) {
+                                //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        ((PostViewHolder)holder).unlike.setTag(false);
+                        ((AppCompatImageButton)((PostViewHolder)holder).unlike).setImageResource(R.drawable.ic_thumb_down_white_18dp);
+                        view.setTag(true);
+                    }
+                    else {
+                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_thumb_up_white_18dp);
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(context.getString(R.string.base_url))
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+                        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+                        NewReview review=new NewReview();
+                        review.setComment("");
+                        review.setRating(3);
+                        Call<Result> call=findPeoplesAPI.postReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
+                        call.enqueue(new Callback<Result>() {
+                            @Override
+                            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Result> call, Throwable t) {
+                                //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        view.setTag(false);
+                    }
+
+
+                }
+            });
+            ((PostViewHolder)holder).unlike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if( (!(Boolean)view.getTag()) ){
+                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_thumb_down_black_18dp);
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(context.getString(R.string.base_url))
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+                        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+                        NewReview review=new NewReview();
+                        review.setComment("");
+                        review.setRating(1);
+                        Call<Result> call=findPeoplesAPI.postReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
+                        call.enqueue(new Callback<Result>() {
+                            @Override
+                            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Result> call, Throwable t) {
+                                //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        ((PostViewHolder)holder).like.setTag(false);
+                        ((AppCompatImageButton)((PostViewHolder)holder).like).setImageResource(R.drawable.ic_thumb_up_white_18dp);
+                        view.setTag(true);
+                    }
+                    else {
+                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_thumb_down_white_18dp);
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(context.getString(R.string.base_url))
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+                        FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
+                        NewReview review=new NewReview();
+                        review.setComment("");
+                        review.setRating(3);
+                        Call<Result> call=findPeoplesAPI.postReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
+                        call.enqueue(new Callback<Result>() {
+                            @Override
+                            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Result> call, Throwable t) {
+                                //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        view.setTag(false);
+                    }
+
+
+                }
+            });
         }else{
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
 
 
-        /*holder.like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if( (!(Boolean)view.getTag()) ){
-                    ((AppCompatImageButton)view).setImageResource(R.drawable.ic_thumb_up_black_18dp);
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constants.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
-                    Review review=new Review();
-                    review.setComment("");
-                    review.setRating(4);
-                    review.setProject(p.getLocalId());
-                    Call<ReviewGet> call=findPeoplesAPI.postReview(Prefs.getString("token",""),review);
-                    call.enqueue(new Callback<ReviewGet>() {
-                        @Override
-                        public void onResponse(Call<ReviewGet> call, Response<ReviewGet> response) {
 
-                        }
-
-                        @Override
-                        public void onFailure(Call<ReviewGet> call, Throwable t) {
-                            //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    view.setTag(true);
-                }
-                else {
-                    ((AppCompatImageButton) view).setImageResource(R.drawable.ic_thumb_up_white_18dp);
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constants.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
-                    Review review=new Review();
-                    review.setComment("");
-                    review.setRating(3);
-                    review.setProject(p.getLocalId());
-                    Call<ReviewGet> call=findPeoplesAPI.postReview(Prefs.getString("token",""),review);
-                    call.enqueue(new Callback<ReviewGet>() {
-                        @Override
-                        public void onResponse(Call<ReviewGet> call, Response<ReviewGet> response) {
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<ReviewGet> call, Throwable t) {
-                            //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    view.setTag(false);
-                }
-
-
-            }
-        });
-        holder.unlike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //unlike
-            }
-        });
 //        holder.comment.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                //comment logic
 //            }
 //        });
-        holder.readmore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Intent i=new Intent(view.getContext(), ProjectDetail.class);
-                Parcelable wrapped = Parcels.wrap(p);
-                i.putExtra("project",wrapped);
-                view.getContext().startActivity(i);
-            }
-        });*/
 
     }
 

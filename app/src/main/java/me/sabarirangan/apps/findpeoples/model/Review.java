@@ -8,12 +8,21 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Review extends RealmObject {
+
+
     @PrimaryKey
     private int id;
     private Project project;
     private String created_at;
     private int rating;
     private UserProfile user;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public Project getProject() {
         return project;

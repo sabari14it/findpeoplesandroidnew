@@ -2,7 +2,9 @@ package me.sabarirangan.apps.findpeoples.extras;
 
 import java.util.List;
 
+import me.sabarirangan.apps.findpeoples.model.Comment;
 import me.sabarirangan.apps.findpeoples.model.NewProject;
+import me.sabarirangan.apps.findpeoples.model.NewReview;
 import me.sabarirangan.apps.findpeoples.model.Project;
 import me.sabarirangan.apps.findpeoples.model.Result;
 import me.sabarirangan.apps.findpeoples.model.Tags;
@@ -50,14 +52,21 @@ public interface FindPeoplesAPI {
     Call<List<Project>> getProjectList(@Header("Authorization") String s);
     @GET("api/userprofile/")
     Call<UserProfile> getUserProfile(@Header("Authorization")String s);
-    @GET("api/myprojects/")
-    Call<List<Project>> getMyProjects(@Header("Authorization")String s);
-    @GET("api/tags/0")
+    @GET("api/tags/1/")
     Call<List<Tags>> getTags(@Header("Authorization")String s);
     @POST("api/editskills/")
     Call<Result> editSkills(@Header("Authorization")String s, @Body List<String> t);
     @POST("api/projects/")
     Call<Result>postProject(@Header("Authorization") String s,@Body NewProject brief);
+    @GET("api/projects/{pid}/reviews/")
+    Call<List<Comment>> getProjectComment(@Header("Authorization")String s, @Path("pid") String pid);
+    @POST("api/projects/{pid}/reviews/")
+    Call<Result> postReview(@Header("Authorization") String s,@Path("pid") String pid,@Body NewReview review);
+    @GET("api/myprojects/")
+    Call<List<Project>> getMyProjects(@Header("Authorization") String s);
+    @GET("api/tags/{tag}/projects/")
+    Call<List<Project>> getProjectsByTag(@Header("Authorization") String s,@Path("tag")String tag);
+
 //    @GET("tags/0/")
 //    Call<List<Skill>> getUserSkills(@Header("Authorization") String s);
 //    @POST("projects/")

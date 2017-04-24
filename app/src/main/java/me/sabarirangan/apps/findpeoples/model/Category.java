@@ -105,7 +105,7 @@ public class Category implements Mentionable {
         private List<Tags> gData=new ArrayList<>();
         public void getCategoryFromDjango(){
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://www.sabarirangan.me:2082/")
+                    .baseUrl("http://192.168.1.37:8000/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
@@ -115,11 +115,12 @@ public class Category implements Mentionable {
                 public void onResponse(Call<List<Tags>> call, Response<List<Tags>> response) {
                     gData.clear();
                     gData.addAll(response.body());
+                    Log.d("sabarirangan",Integer.toString(gData.size()));
                 }
 
                 @Override
                 public void onFailure(Call<List<Tags>> call, Throwable t) {
-                    Log.d("sabari",t.getMessage());
+                    Log.d("sabarirangan",t.getMessage());
                 }
             });
         }
@@ -140,5 +141,11 @@ public class Category implements Mentionable {
             return suggestions;
 
         }
+        public ArrayList<Tags> getTags(){
+            return (ArrayList<Tags>)gData;
+        }
+
+
+
     }
 }

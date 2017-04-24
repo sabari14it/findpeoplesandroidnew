@@ -1,0 +1,110 @@
+{
+  "project_info": {
+    "project_number": "433000466638",
+    "project_id": "firebase-findpeoples"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433000466638:android:4f59281a0b0d517e",
+        "android_client_info": {
+          "package_name": "me.sabarirangan.android.findpeoples"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433000466638-k8oatph2ttuitqp32h5kj2bnmbke0bm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkrPssEY8zGlWtpke-EiPINawvJilDSaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433000466638:android:48e8a212397eb359",
+        "android_client_info": {
+          "package_name": "apps.sabarirangan.me.findpeoples"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433000466638-k8oatph2ttuitqp32h5kj2bnmbke0bm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkrPssEY8zGlWtpke-EiPINawvJilDSaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433000466638:android:24222a798f7b86d7",
+        "android_client_info": {
+          "package_name": "me.sabarirangan.apps.findpeoples"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433000466638-ascbv24mdbujn63cq9u1it0p39urn3ld.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.sabarirangan.apps.findpeoples",
+            "certificate_hash": "35c922b6818e6960d786304941befb05d5fdbc8a"
+          }
+        },
+        {
+          "client_id": "433000466638-k8oatph2ttuitqp32h5kj2bnmbke0bm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkrPssEY8zGlWtpke-EiPINawvJilDSaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

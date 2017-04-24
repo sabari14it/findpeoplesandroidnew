@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.sabarirangan.apps.findpeoples.R;
+import me.sabarirangan.apps.findpeoples.activities.SearchProjectActivity;
 import me.sabarirangan.apps.findpeoples.model.Tags;
 
 /**
@@ -48,9 +49,9 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder>{
         holder.r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent i=new Intent(view.getContext(), SearchProjectActivity.class);
-//                i.putExtra("query",holder.name.getText());
-//                view.getContext().startActivity(i);
+                Intent i=new Intent(view.getContext(), SearchProjectActivity.class);
+                i.putExtra("query",holder.name.getText());
+                view.getContext().startActivity(i);
             }
         });
 
