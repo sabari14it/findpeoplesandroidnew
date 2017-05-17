@@ -1,14 +1,16 @@
-<LinearLayout android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/search_layover_bg">
-            <android.support.v7.widget.Toolbar
+        android:background="#607D8B">
+
+
+
+        <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -19,6 +21,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/post_recycler_view"
+        android:layout_below="@id/appbarlayout"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No Posts"
+        android:layout_below="@id/appbarlayout"
+        android:visibility="gone"
+        android:id="@+id/noposts"/>
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_below="@id/appbarlayout"/>
 
-</LinearLayout>
+</RelativeLayout>

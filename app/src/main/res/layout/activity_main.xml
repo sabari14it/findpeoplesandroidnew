@@ -55,16 +55,32 @@
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/newpost"
+    <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:fab_icon="@drawable/ic_fab_star"
-        fab:fab_colorNormal="@color/pink"
-        fab:fab_colorPressed="@color/pink_pressed"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/ic_newpost"
+        app:backgroundTint="#607D8B"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:fabSize="normal"
+        android:id="@+id/newpost"/>
+    <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
+        <!--android:id="@+id/newpost"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--fab:fab_icon="@drawable/ic_fab_star"-->
+        <!--fab:fab_colorNormal="@color/pink"-->
+        <!--fab:fab_colorPressed="@color/pink_pressed"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:visibility="visible"-->
+        <!--android:layout_marginBottom="16dp"-->
+        <!--android:background="#FFFFFF"/>-->
 
 
 </RelativeLayout>

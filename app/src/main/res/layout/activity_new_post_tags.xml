@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:id="@+id/newposttag"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical">
     <android.support.design.widget.AppBarLayout
@@ -9,15 +10,24 @@
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/toolbar">
+            android:id="@+id/toolbar"
+            android:background="@color/theme_primary">
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
     <com.linkedin.android.spyglass.ui.RichEditorView
         android:id="@+id/editor"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="30"
         android:hint="tag"
         android:minHeight="300dp"
         android:inputType="textCapSentences|textMultiLine"/>
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:id="@+id/anonymous"
+        android:text="be anonymous"
+        android:visibility="gone"
+        android:layout_height="wrap_content" />
 </LinearLayout>

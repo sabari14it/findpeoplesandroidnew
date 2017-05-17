@@ -4,6 +4,6 @@
     <item
         android:id="@+id/next"
         android:title="next"
-        android:icon="@drawable/right_arrow"
+        android:icon="@drawable/ic_next"
         app:showAsAction="always|withText"/>
 </menu>

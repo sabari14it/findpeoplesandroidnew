@@ -1,27 +1,39 @@
 {
   "project_info": {
-    "project_number": "116250729949",
-    "firebase_url": "https://findpeoples-f8789.firebaseio.com",
-    "project_id": "findpeoples-f8789",
-    "storage_bucket": "findpeoples-f8789.appspot.com"
+    "project_number": "433000466638",
+    "firebase_url": "https://fir-findpeoples.firebaseio.com",
+    "project_id": "firebase-findpeoples",
+    "storage_bucket": "firebase-findpeoples.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:116250729949:android:4f59281a0b0d517e",
+        "mobilesdk_app_id": "1:433000466638:android:b738ae02f19c4a28",
         "android_client_info": {
-          "package_name": "me.sabarirangan.android.findpeoples"
+          "package_name": "me.sabarirangan.androidapps.findpeoples"
         }
       },
       "oauth_client": [
         {
-          "client_id": "116250729949-msblp9c7906hp6uu4fdp7s3sn9c3a6fk.apps.googleusercontent.com",
+          "client_id": "433000466638-rih3upkmqg0uj8i7e34qv1e45j90l0ah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.sabarirangan.androidapps.findpeoples",
+            "certificate_hash": "645ab2198368f2e3a6076c10bcc46ddda797068d"
+          }
+        },
+        {
+          "client_id": "433000466638-ditujfs7ve6p5qopil33dhn94en2994m.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "433000466638-k8oatph2ttuitqp32h5kj2bnmbke0bm2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDAtKFCM9DGDZiHd833vomjYxzxPZj7LdE"
+          "current_key": "AIzaSyAkrPssEY8zGlWtpke-EiPINawvJilDSaw"
         }
       ],
       "services": {
@@ -29,8 +41,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433000466638-ditujfs7ve6p5qopil33dhn94en2994m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

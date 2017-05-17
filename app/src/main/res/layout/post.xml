@@ -19,17 +19,16 @@
             android:textSize="30dp"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/userprofilepost">
         <com.makeramen.roundedimageview.RoundedImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/avatar"
             android:src="@drawable/ic_person_outline_black_24dp"
             android:scaleType="fitCenter"
             app:riv_corner_radius="30dip"
-            app:riv_border_width="2dip"
-            app:riv_border_color="#333333"
             app:riv_mutate_background="true"
             app:riv_tile_mode="repeat"
             app:riv_oval="true"
@@ -53,7 +52,8 @@
                     android:textSize="10sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="written on thursday"/>
+                    android:text="written on thursday"
+                    android:id="@id/created_at"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -69,7 +69,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="50dp"
+                android:id="@+id/descriptionlayout">
 
 
 
@@ -83,6 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Read More"
+                    android:textColor="@color/theme_primary_dark"
                     android:id="@+id/read_full"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true" />
@@ -90,7 +92,9 @@
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tagrv"></android.support.v7.widget.RecyclerView>
+                android:id="@+id/tagrv">
+
+            </android.support.v7.widget.RecyclerView>
 
             <LinearLayout
             android:layout_width="match_parent"
@@ -104,13 +108,15 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_thumb_up_white_18dp"
+                android:src="@drawable/ic_like_inactive"
+                android:background="#FFFFFF"
                 android:id="@+id/like"/>
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_thumb_down_white_18dp"
-                android:id="@+id/unlike"/>
+                android:src="@drawable/ic_unlike_inactive"
+                android:id="@+id/unlike"
+                android:background="#FFFFFF"/>
 
 
         </LinearLayout>

@@ -6,17 +6,19 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/detailact"
-    tools:context="me.sabarirangan.android.findpeoples.activities.ProjectDetail">
+    tools:context="me.sabarirangan.androidapps.findpeoples.activities.ProjectDetail">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        >
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="#87cefa"
+        android:background="#607D8B"
         android:theme="@style/AppTheme.AppBarOverlay">
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -25,9 +27,11 @@
             app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,72 +39,105 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_margin="10dp">
+                android:orientation="vertical">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/title"
                     android:text="Title"
-                    android:textSize="40dp"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
-                <com.makeramen.roundedimageview.RoundedImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/avatar"
-                    android:src="@drawable/ic_person_outline_black_24dp"
-                    android:scaleType="fitCenter"
-                    app:riv_corner_radius="30dip"
-                    app:riv_border_width="2dip"
-                    app:riv_border_color="#333333"
-                    app:riv_mutate_background="true"
-                    app:riv_tile_mode="repeat"
-                    app:riv_oval="true"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"/>
+                    android:textSize="40dp"
+                    android:textStyle="bold"/>
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="5dp"
-                    >
-                    <TextView
+                    android:orientation="horizontal"
+                    android:id="@+id/userprofilepost">
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/avatar"
+                        android:src="@drawable/ic_person_outline_black_24dp"
+                        android:scaleType="fitCenter"
+                        app:riv_corner_radius="30dip"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="true"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"/>
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
-                        android:text="anonymous"
-                        android:id="@+id/username"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-                    <TextView
-                        android:textSize="10sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="written on thursday"
-                        android:id="@+id/created_at"/>
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:layout_marginLeft="5dp"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:text="anonymous"
+                            android:id="@+id/username"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+                        <TextView
+                            android:textSize="10sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="written on thursday"
+                            android:id="@+id/created_at"/>
+                    </LinearLayout>
 
-            </LinearLayout>
+                </LinearLayout>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/description"
-                    android:text="hi"/>
-                <android.support.v7.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tagrv">
-
-                </android.support.v7.widget.RecyclerView>
+                    android:text="hi"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"/>
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="2dp"
                     android:background="#c0c0c0"
-                    android:layout_margin="5sp"/>
+                    android:layout_marginTop="5sp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="10dp"
+                    android:id="@+id/interestedlayout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Interested in:"
+                        android:layout_marginRight="20dp"/>
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_like_inactive"
+                        android:background="#FFFFFF"
+                        android:id="@+id/like"/>
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_unlike_inactive"
+                        android:id="@+id/unlike"
+                        android:background="#FFFFFF"/>
+
+
+                </LinearLayout>
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"
+                    android:layout_marginBottom="20sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Comments:"
+                    android:layout_marginBottom="10sp"/>
+
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
@@ -109,6 +146,7 @@
 
                 </android.support.v7.widget.RecyclerView>
             </LinearLayout>
+
 
         </android.support.v4.widget.NestedScrollView>
 
