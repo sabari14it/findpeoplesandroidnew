@@ -1,8 +1,7 @@
 package me.sabarirangan.androidapps.findpeoples.Adapter;
 
-import android.app.Activity;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,14 +20,12 @@ import com.pixplicity.easyprefs.library.Prefs;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import me.sabarirangan.androidapps.findpeoples.R;
 import me.sabarirangan.androidapps.findpeoples.activities.NewPost;
 import me.sabarirangan.androidapps.findpeoples.activities.ProjectDetail;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.androidapps.findpeoples.extras.OnLoadMoreListener;
 import me.sabarirangan.androidapps.findpeoples.model.Project;
-import me.sabarirangan.androidapps.findpeoples.model.Result;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -168,21 +164,23 @@ public class MyProjectRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
 
                                 Call<Response<Void>> call = findPeoplesAPI.deleteProject(Prefs.getString("token", "abcd"), Integer.toString(p1.getId()));
-                                Project p=realm.where(Project.class).equalTo("id",p1.getId()).findFirst();
-                                realm.beginTransaction();
-                                p.deleteFromRealm();
-                                realm.commitTransaction();
-                                list.remove(p1);
-                                notifyDataSetChanged();
+                                final Project p=realm.where(Project.class).equalTo("id",p1.getId()).findFirst();
+
+
                                 call.enqueue(new Callback<Response<Void>>() {
                                     @Override
                                     public void onResponse(Call<Response<Void>> call, Response<Response<Void>> response) {
+                                        realm.beginTransaction();
+                                        p.deleteFromRealm();
+                                        realm.commitTransaction();
+                                        list.remove(p1);
+                                        notifyDataSetChanged();
 
                                     }
 
                                     @Override
                                     public void onFailure(Call<Response<Void>> call, Throwable t) {
-
+                                        Snackbar.make(fragment.getActivity().findViewById(R.id.profilefragmentlay),"No Internet",Snackbar.LENGTH_SHORT).show();
                                     }
                                 });
                                 return true;

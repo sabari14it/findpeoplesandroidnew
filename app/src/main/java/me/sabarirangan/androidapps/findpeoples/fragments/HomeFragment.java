@@ -21,13 +21,10 @@ import java.util.List;
 import android.os.Handler;
 
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 //import me.sabarirangan.apps.findpeoples.Adapter.PostRecyclerViewAdapter;
-import io.realm.Sort;
 import me.sabarirangan.androidapps.findpeoples.Adapter.PostRecyclerViewAdapter;
 import me.sabarirangan.androidapps.findpeoples.R;
-import me.sabarirangan.androidapps.findpeoples.activities.MainActivity;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.androidapps.findpeoples.extras.OnLoadMoreListener;
 import me.sabarirangan.androidapps.findpeoples.model.Project;
@@ -53,6 +50,7 @@ public class HomeFragment extends Fragment {
     static Boolean lastpage=false;
     RecyclerView recyclerView;
     static boolean called=false;
+    static boolean switchtab=false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,8 +73,11 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
-        if(!called)
-        swipeRefreshLayout.setRefreshing(true);
+        if(!switchtab){
+            switchtab=true;
+            swipeRefreshLayout.setRefreshing(true);
+        }
+
 
 
 
@@ -107,7 +108,7 @@ public class HomeFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisible()){
             if(isVisibleToUser){
-                Log.d("MyTag","home Fragment is visible");
+
 
 
             }else{
@@ -186,7 +187,9 @@ public class HomeFragment extends Fragment {
         if(requestCode==101){
             int pos=data.getIntExtra("position",0);
             Project p1=realm.where(Project.class).equalTo("id",data.getIntExtra("projectid",0)).findFirst();
+            realm.beginTransaction();
             projects.get(pos).setStatus(p1.getStatus());
+            realm.commitTransaction();
             adapter=new PostRecyclerViewAdapter(projects,recyclerView,this);
             recyclerView.setAdapter(adapter);
         }else{

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,12 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import me.sabarirangan.androidapps.findpeoples.Adapter.CommentRecyclerViewAdapter;
 import me.sabarirangan.androidapps.findpeoples.Adapter.NotifyAdapter;
 import me.sabarirangan.androidapps.findpeoples.R;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
@@ -32,7 +30,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import com.beloo.widget.chipslayoutmanager.util.log.Log;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
@@ -122,7 +119,7 @@ public class NotificationFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisible()){
             if(isVisibleToUser){
-                Log.d("MyTag","Notify Fragment is visible");
+                getMyComments();
             }else{
                 //Log.d("MyTag","My Fragment is not visible");
             }
@@ -140,36 +137,39 @@ public class NotificationFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response)
             {
-                if(pagenumber==1) {
-                    RealmResults results = realm.where(Comment.class).equalTo("notify", 1).findAll();
-                    realm.beginTransaction();
-                    results.deleteAllFromRealm();
-                    realm.commitTransaction();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(response.body());
-                    realm.commitTransaction();
-                    comments.clear();
-                    if(response.body().size()==0){
-                        noalerts.setVisibility(View.VISIBLE);
-                        lastpage=true;
-                    }else{
-                        noalerts.setVisibility(View.GONE);
-                    }
+                if(response.body()!=null) {
+                    if (pagenumber == 1) {
+                        RealmResults results = realm.where(Comment.class).equalTo("notify", 1).findAll();
+                        realm.beginTransaction();
+                        results.deleteAllFromRealm();
+                        realm.commitTransaction();
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(response.body());
+                        realm.commitTransaction();
+                        comments.clear();
+                        if (response.body().size() == 0) {
+                            noalerts.setVisibility(View.VISIBLE);
+                            lastpage = true;
+                        } else {
+                            noalerts.setVisibility(View.GONE);
+                        }
 
-                }else{
-                    if(response.body().size()==0){
-                        lastpage=true;
+                    } else {
+                        if (response.body().size() == 0) {
+                            lastpage = true;
+                        }
+                        comments.remove(null);
                     }
-                    comments.remove(null);
+                    comments.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                    adapter.setLoaded();
                 }
-                comments.addAll(response.body());
-                adapter.notifyDataSetChanged();
-                adapter.setLoaded();
 
             }
 
             @Override
             public void onFailure(Call<List<Comment>> call, Throwable t) {
+                Snackbar.make(getView(),"No Internet",Snackbar.LENGTH_LONG).show();
                 if(pagenumber==1) {
                     RealmResults results = realm.where(Comment.class).equalTo("notify", 1).findAll();
                     comments.clear();

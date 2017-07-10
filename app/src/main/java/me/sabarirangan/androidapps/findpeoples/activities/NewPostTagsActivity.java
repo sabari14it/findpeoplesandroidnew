@@ -2,8 +2,8 @@ package me.sabarirangan.androidapps.findpeoples.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import me.sabarirangan.androidapps.findpeoples.R;
 import me.sabarirangan.androidapps.findpeoples.model.Category;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
@@ -116,7 +115,7 @@ public class NewPostTagsActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.charAt(s.length()-1)=='\n'||s.charAt(s.length()-1)==' '){
+                if(s.toString().contains("\n")||s.toString().contains(" ")){
                     mycurrstring=s.toString();
                     mycurrstring=mycurrstring.replace(' ','_');
                     mycurrstring=mycurrstring.replace('\n',',');
@@ -155,7 +154,7 @@ public class NewPostTagsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         String tags=editor.getText().toString();
-        ArrayList<String> items = new ArrayList<String>(Arrays.asList(tags.split("\\s*,\\s*")));
+        final ArrayList<String> items = new ArrayList<String>(Arrays.asList(tags.split("\\s*,\\s*")));
 //        for(String s: items){
 //            Log.w("tags",s);
 //            Retrofit retrofit = new Retrofit.Builder()
@@ -194,23 +193,24 @@ public class NewPostTagsActivity extends AppCompatActivity {
                     realm.copyToRealmOrUpdate(response.body());
                     realm.commitTransaction();
                     Intent intent=new Intent();
+                    intent.putExtra("skills",items);
                     setResult(2,intent);
                     finish();
                 }
 
                 @Override
                 public void onFailure(Call<UserProfile> call, Throwable t) {
-                    Log.d("jarvis",t.getMessage());
+                    Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
+                    Intent intent=new Intent();
+                    setResult(2,intent);
+                    finish();
                 }
             });
-            Intent intent=new Intent();
-            intent.putExtra("skills",items);
-            setResult(2,intent);
-            finish();//finishing activity
+            //finishing activity
 
         }else if(flag==1){
             project.setTags(items);
-            project.setAnonymous(anonymouscheck.isEnabled());
+            project.setAnonymous(anonymouscheck.isChecked());
             Intent i=new Intent(this,MainActivity.class);
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(getString(R.string.base_url))
@@ -226,7 +226,7 @@ public class NewPostTagsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Result> call, Throwable t) {
-                    Log.d("jarvis",t.getMessage());
+                    Snackbar.make(findViewById(R.id.newposttag),"No Internet",Snackbar.LENGTH_SHORT).show();
                 }
             });
 
@@ -255,7 +255,7 @@ public class NewPostTagsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Project> call, Throwable t) {
-                    Log.d("jarvis",t.getMessage());
+                    Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
                 }
             });
         }

@@ -1,7 +1,5 @@
 package me.sabarirangan.androidapps.findpeoples.model;
 
-import org.parceler.Parcel;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 

@@ -2,10 +2,8 @@ package me.sabarirangan.androidapps.findpeoples.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,24 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.pixplicity.easyprefs.library.Prefs;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import me.sabarirangan.androidapps.findpeoples.R;
 import me.sabarirangan.androidapps.findpeoples.activities.ProjectDetail;
 import me.sabarirangan.androidapps.findpeoples.extras.OnLoadMoreListener;
 import me.sabarirangan.androidapps.findpeoples.model.Comment;
-import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by ubuntu on 15/1/17.

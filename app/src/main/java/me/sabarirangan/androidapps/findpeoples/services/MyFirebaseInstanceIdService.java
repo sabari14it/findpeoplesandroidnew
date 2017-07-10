@@ -1,16 +1,14 @@
 package me.sabarirangan.androidapps.findpeoples.services;
 
-import android.content.Intent;
+import android.app.Activity;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import me.sabarirangan.androidapps.findpeoples.R;
-import me.sabarirangan.androidapps.findpeoples.activities.GoogleSigninActivity;
-import me.sabarirangan.androidapps.findpeoples.activities.MainActivity;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.androidapps.findpeoples.model.Result;
 import me.sabarirangan.androidapps.findpeoples.model.Token;
@@ -60,7 +58,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                Snackbar.make(((Activity)getApplicationContext()).findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_LONG).show();
             }
         });
     }

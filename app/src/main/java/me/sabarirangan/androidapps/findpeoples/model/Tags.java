@@ -1,10 +1,7 @@
 package me.sabarirangan.androidapps.findpeoples.model;
 
-import org.parceler.Parcel;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import retrofit2.http.Path;
 
 /**
  * Created by sabari on 20-04-2017.

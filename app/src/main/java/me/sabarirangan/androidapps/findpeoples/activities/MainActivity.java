@@ -1,14 +1,11 @@
 package me.sabarirangan.androidapps.findpeoples.activities;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,12 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
-import com.miguelcatalan.materialsearchview.SearchAdapter;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
@@ -99,6 +92,32 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).setIcon(getResources().getDrawable(R.drawable.ic_home_active));
         tabLayout.getTabAt(1).setIcon(getResources().getDrawable(R.drawable.ic_notification_inactive));
         tabLayout.getTabAt(2).setIcon(getResources().getDrawable(R.drawable.ic_profile_inactive));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()){
+                    case 0:
+                        getSupportActionBar().setTitle("Home");
+                        break;
+                    case 1:
+                        getSupportActionBar().setTitle("Notification");
+                        break;
+                    case 2:
+                        getSupportActionBar().setTitle("Profile");
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -135,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar((android.support.v7.widget.Toolbar)findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle("Home");
 //        FloatingActionButton post=(FloatingActionButton)findViewById(R.id.newpost);
 //        post.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -223,7 +243,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Tags>> call, Throwable t) {
-                        Log.d("sabarirangan",t.getMessage());
+                        gData.clear();
+
                     }
                 });
 
@@ -243,8 +264,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Boolean mAction=getIntent().getBooleanExtra("notification",false);
-        if(mAction)
+        if(mAction){
+            getSupportActionBar().setTitle("Notification");
             viewPager.setCurrentItem(1,false);
+        }
+
 
     }
 
@@ -310,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Result> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
                 }
             });
 

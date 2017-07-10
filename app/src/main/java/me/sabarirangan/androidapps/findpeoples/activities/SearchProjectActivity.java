@@ -3,6 +3,7 @@ package me.sabarirangan.androidapps.findpeoples.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -88,6 +89,7 @@ public class SearchProjectActivity extends AppCompatActivity {
             public void onFailure(Call<List<Project>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 nopost.setVisibility(View.VISIBLE);
+                Snackbar.make(findViewById(R.id.searchlayout),"No Internet",Snackbar.LENGTH_SHORT).show();
             }
         });
     }

@@ -3,6 +3,7 @@ package me.sabarirangan.androidapps.findpeoples.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +20,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.pixplicity.easyprefs.library.Prefs;
-import com.squareup.picasso.Picasso;
 
 import io.realm.Realm;
 import me.sabarirangan.androidapps.findpeoples.R;
@@ -107,7 +107,7 @@ public class GoogleSigninActivity extends AppCompatActivity implements
                 FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
                 Token t=new Token();
                 t.setCode(authCode);
-                //Log.d("oauth",t.getCode());
+                Log.d("oauth",t.getCode());
                 Call<Token> call=findPeoplesAPI.loginUser(t);// t is the auth code
                 call.enqueue(new Callback<Token>() {
                     @Override
@@ -128,7 +128,7 @@ public class GoogleSigninActivity extends AppCompatActivity implements
 
                     @Override
                     public void onFailure(Call<Token> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
                     }
                 });
 
@@ -146,7 +146,9 @@ public class GoogleSigninActivity extends AppCompatActivity implements
         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
         Token t=new Token();
         t.setCode(Prefs.getString("fcmtoken","abc"));
+
         Call<Result> call=findPeoplesAPI.sendFCMtoken(Prefs.getString("token","abcd"),t);// t is the auth code
+        findViewById(R.id.sign_in_button).setEnabled(false);
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
@@ -156,17 +158,19 @@ public class GoogleSigninActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                findViewById(R.id.sign_in_button).setEnabled(true);
+                Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
             }
         });
     }
 
     private boolean validateEmail(String email) {
-        String[] words=email.split("@");//splits the string based on whitespace
-        if(words[1].equals("kct.ac.in"))
-            return true;
-        else
-            return false;
+//        String[] words=email.split("@");//splits the string based on whitespace
+//        if(words[1].equals("kct.ac.in"))
+//            return true;
+//        else
+//            return false;
+        return true;
     }
 
     @Override
@@ -216,7 +220,7 @@ public class GoogleSigninActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<UserProfile> call, Throwable t) {
-
+                Snackbar.make(findViewById(R.id.main_layout),"No Internet",Snackbar.LENGTH_SHORT).show();
             }
         });
 

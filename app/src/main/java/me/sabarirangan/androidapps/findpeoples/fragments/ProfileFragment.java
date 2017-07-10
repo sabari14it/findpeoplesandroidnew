@@ -1,7 +1,6 @@
 package me.sabarirangan.androidapps.findpeoples.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,11 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
 import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration;
-import com.beloo.widget.chipslayoutmanager.util.log.Log;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.pixplicity.easyprefs.library.Prefs;
 import com.squareup.picasso.Picasso;
@@ -138,7 +135,7 @@ public class ProfileFragment extends Fragment {
 //        super.setUserVisibleHint(isVisibleToUser);
 //        if(isVisible()){
 //            if(isVisibleToUser){
-//                Log.d("MyTag","Profile Fragment is visible");
+//                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Profile");
 //            }else{
 //                //Log.d("MyTag","Profile Fragment is not visible");
 //            }
@@ -192,6 +189,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Project>> call, Throwable t) {
+                Snackbar.make(getView(),"No Internet",Snackbar.LENGTH_LONG).show();
                 if(((Activity)getContext()).getIntent().getBooleanExtra("userprofiledetail",false)){
                     return;
                 }

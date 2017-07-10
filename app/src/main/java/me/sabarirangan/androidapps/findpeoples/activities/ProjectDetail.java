@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,21 +20,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
-import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration;
+
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.pixplicity.easyprefs.library.Prefs;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
 import java.util.ArrayList;
 import java.util.List;
 import io.realm.Realm;
-import io.realm.RealmResults;
 import me.sabarirangan.androidapps.findpeoples.Adapter.CommentRecyclerViewAdapter;
-import me.sabarirangan.androidapps.findpeoples.Adapter.PostRecyclerViewAdapter;
-import me.sabarirangan.androidapps.findpeoples.Adapter.TagAdapter;
 import me.sabarirangan.androidapps.findpeoples.R;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.androidapps.findpeoples.extras.OnLoadMoreListener;
@@ -41,9 +36,6 @@ import me.sabarirangan.androidapps.findpeoples.model.Comment;
 import me.sabarirangan.androidapps.findpeoples.model.NewComment;
 import me.sabarirangan.androidapps.findpeoples.model.NewReview;
 import me.sabarirangan.androidapps.findpeoples.model.Project;
-import me.sabarirangan.androidapps.findpeoples.model.Result;
-import me.sabarirangan.androidapps.findpeoples.model.Review;
-import me.sabarirangan.androidapps.findpeoples.model.Tags;
 import me.sabarirangan.androidapps.findpeoples.model.UserProfile;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,6 +66,7 @@ public class ProjectDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_detail);
+        try {
         resInent=new Intent();
         userprofilepost= (LinearLayout) findViewById(R.id.userprofilepost);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -116,218 +109,325 @@ public class ProjectDetail extends AppCompatActivity {
         p= realm.where(Project.class).equalTo("id",getIntent().getIntExtra("projectid",0)).findFirst();
         resInent.putExtra("delete",i.getBooleanExtra("delete",false));
         resInent.putExtra("projectid",i.getIntExtra("projectid",0));
-        if(i.getBooleanExtra("myproject",false)&&Prefs.getInt("userprofileid",0)==p.getUser().getId()){
-            interestedlayout= (LinearLayout) findViewById(R.id.interestedlayout);
-            interestedlayout.setVisibility(View.GONE);
-        }else {
-            like.setTag(false);
-            unlike.setTag(false);
-            if (p.getStatus() == 3) {
-                like.setImageResource(R.drawable.ic_like_active);
-                like.setTag(true);
-            } else if (p.getStatus() == 1) {
-                unlike.setImageResource(R.drawable.ic_unlike_active);
-                unlike.setTag(true);
+
+            if (i.getBooleanExtra("myproject", false) && Prefs.getInt("userprofileid", 0) == p.getUser().getId()) {
+                interestedlayout = (LinearLayout) findViewById(R.id.interestedlayout);
+                interestedlayout.setVisibility(View.GONE);
+            } else {
+                like.setTag(false);
+                unlike.setTag(false);
+                if (p.getStatus() != null && p.getStatus() != null && p.getStatus() != null && p.getStatus() == 3) {
+                    like.setImageResource(R.drawable.ic_like_active);
+                    like.setTag(true);
+                } else if (p.getStatus() != null && p.getStatus() == 1) {
+                    unlike.setImageResource(R.drawable.ic_unlike_active);
+                    unlike.setTag(true);
+                }
+                like.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        if ((!(Boolean) view.getTag())) {
+                            final boolean temp1 = (boolean) like.getTag();
+                            final boolean temp2 = (boolean) unlike.getTag();
+                            ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_active);
+                            view.setTag(true);
+                            ((AppCompatImageButton) unlike).setImageResource(R.drawable.ic_unlike_inactive);
+                            unlike.setTag(false);
+
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(getString(R.string.base_url))
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
+                            NewReview review = new NewReview();
+                            review.setRating(3);
+
+                            if (p.getStatus() != null && p.getStatus() == 0) {
+
+
+                                Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(3);
+                                        realm.commitTransaction();
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+
+
+                                    }
+                                });
+                            } else {
+
+                                Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(3);
+                                        realm.commitTransaction();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+
+                                    }
+                                });
+                            }
+
+
+                        } else {
+                            final boolean temp1 = (boolean) view.getTag();
+                            ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_inactive);
+                            view.setTag(false);
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(getString(R.string.base_url))
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
+                            NewReview review = new NewReview();
+                            review.setRating(2);
+
+                            if (p.getStatus() != null && p.getStatus() == 0) {
+
+                                Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(2);
+                                        realm.commitTransaction();
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+
+                                    }
+                                });
+                            } else {
+
+                                Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(2);
+                                        realm.commitTransaction();
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+
+                    }
+                });
+                unlike.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if ((!(Boolean) view.getTag())) {
+                            final boolean temp1 = (boolean) like.getTag();
+                            final boolean temp2 = (boolean) unlike.getTag();
+                            ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_active);
+                            view.setTag(true);
+                            like.setImageResource(R.drawable.ic_like_inactive);
+                            like.setTag(false);
+
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(getString(R.string.base_url))
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
+                            NewReview review = new NewReview();
+                            review.setRating(1);
+                            if (p.getStatus() != null && p.getStatus() == 0) {
+
+                                Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(1);
+                                        realm.commitTransaction();
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+                                    }
+                                });
+                            } else {
+
+                                Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(1);
+                                        realm.commitTransaction();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp1) {
+                                            like.setImageResource(R.drawable.ic_like_active);
+                                            like.setTag(true);
+                                        } else {
+                                            like.setImageResource(R.drawable.ic_like_inactive);
+                                            like.setTag(false);
+                                        }
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+                                    }
+                                });
+                            }
+
+
+                        } else {
+                            final boolean temp2 = (boolean) view.getTag();
+                            ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_inactive);
+                            view.setTag(false);
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(getString(R.string.base_url))
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
+                            NewReview review = new NewReview();
+                            review.setRating(2);
+
+                            if (p.getStatus() != null && p.getStatus() == 0) {
+
+                                Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(2);
+                                        realm.commitTransaction();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+                                    }
+                                });
+                            } else {
+
+                                Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
+                                call.enqueue(new Callback<NewReview>() {
+                                    @Override
+                                    public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                        realm.beginTransaction();
+                                        p.setStatus(2);
+                                        realm.commitTransaction();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NewReview> call, Throwable t) {
+                                        Snackbar.make(findViewById(R.id.detailact), "No Connection", Snackbar.LENGTH_SHORT).show();
+                                        if (temp2) {
+                                            unlike.setImageResource(R.drawable.ic_unlike_active);
+                                            unlike.setTag(true);
+                                        } else {
+                                            unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                            unlike.setTag(false);
+                                        }
+                                    }
+                                });
+                            }
+
+                            pagenumber = 1;
+                            getComments();
+                        }
+
+
+                    }
+                });
             }
-            like.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if ((!(Boolean) view.getTag())) {
-                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_active);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(getString(R.string.base_url))
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
-                        NewReview review = new NewReview();
-                        review.setRating(3);
 
-                        if (p.getStatus() == 0) {
-                            realm.beginTransaction();
-                            p.setStatus(3);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        } else {
-                            realm.beginTransaction();
-                            p.setStatus(3);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        unlike.setTag(false);
-                        ((AppCompatImageButton) unlike).setImageResource(R.drawable.ic_unlike_inactive);
-                        view.setTag(true);
-                    } else {
-                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_inactive);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(getString(R.string.base_url))
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
-                        NewReview review = new NewReview();
-                        review.setRating(2);
-
-                        if (p.getStatus() == 0) {
-                            realm.beginTransaction();
-                            p.setStatus(2);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        } else {
-                            realm.beginTransaction();
-                            p.setStatus(2);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        view.setTag(false);
-                    }
-
-
-                }
-            });
-            unlike.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if ((!(Boolean) view.getTag())) {
-                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_active);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(getString(R.string.base_url))
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
-                        NewReview review = new NewReview();
-                        review.setRating(1);
-                        if (p.getStatus() == 0) {
-                            realm.beginTransaction();
-                            p.setStatus(1);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-                                    //sadas
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        } else {
-                            realm.beginTransaction();
-                            p.setStatus(1);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-                                    //asdas
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        like.setTag(false);
-                        ((AppCompatImageButton) like).setImageResource(R.drawable.ic_like_inactive);
-                        view.setTag(true);
-                    } else {
-                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_inactive);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(getString(R.string.base_url))
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        FindPeoplesAPI findPeoplesAPI = retrofit.create(FindPeoplesAPI.class);
-                        NewReview review = new NewReview();
-                        review.setRating(2);
-
-                        if (p.getStatus() == 0) {
-                            realm.beginTransaction();
-                            p.setStatus(2);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-                                    //asdasd
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        } else {
-                            realm.beginTransaction();
-                            p.setStatus(2);
-                            realm.commitTransaction();
-                            Call<NewReview> call = findPeoplesAPI.updatePostReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
-                            call.enqueue(new Callback<NewReview>() {
-                                @Override
-                                public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-                                    //sddfsfds
-                                }
-
-                                @Override
-                                public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        view.setTag(false);
-                        pagenumber = 1;
-                        getComments();
-                    }
-
-
-                }
-            });
-        }
         getComments();
         title.setText(p.getTitle());
         if(p.getAnonymous()){
@@ -368,7 +468,8 @@ public class ProjectDetail extends AppCompatActivity {
                 c.setUser(realm.where(UserProfile.class).equalTo("id",Prefs.getInt("userprofileid",0)).findFirst());
                 c.setProject(p);
                 c.setId(0);
-                commentlist.add(0,c);
+                commentlist.add(c);
+                commentrv.scrollToPosition(commentlist.size()-1);
                 commentAdapter.notifyDataSetChanged();
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(getString(R.string.base_url))
@@ -391,12 +492,17 @@ public class ProjectDetail extends AppCompatActivity {
                         commentlist.remove(c);
                         commentlist.remove(null);
                         commentAdapter.notifyDataSetChanged();
+                        Snackbar.make(findViewById(R.id.detailact),"No Connection",Snackbar.LENGTH_SHORT).show();
 
-                        Toast.makeText(getApplicationContext(),"No Internet",Toast.LENGTH_LONG).show();
+
                     }
                 });
             }
         });
+        }catch (Exception e){
+            Toast.makeText(this,"No Internet",Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void getComments() {

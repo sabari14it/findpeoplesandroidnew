@@ -42,12 +42,13 @@ public class Comment extends RealmObject{
         Date date = null;
         try {
             date = fmt.parse(spdate[0]);
+            SimpleDateFormat fmtOut = new SimpleDateFormat("MMM dd,yyyy");
+            return fmtOut.format(date);
         } catch (ParseException e) {
-            e.printStackTrace();
+            return "now";
         }
 
-        SimpleDateFormat fmtOut = new SimpleDateFormat("MMM dd,yyyy");
-        return fmtOut.format(date);
+
     }
 
     public void setCreated_at(String created_at) {

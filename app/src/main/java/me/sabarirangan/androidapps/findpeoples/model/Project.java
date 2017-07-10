@@ -2,8 +2,6 @@ package me.sabarirangan.androidapps.findpeoples.model;
 
 import android.support.annotation.NonNull;
 
-import org.parceler.Parcel;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,7 +35,7 @@ public class Project extends RealmObject{
     private Integer status;
 
     public Integer getStatus() {
-        return status;
+        return (status==null)?10:status;
     }
 
     public void setStatus(Integer status) {

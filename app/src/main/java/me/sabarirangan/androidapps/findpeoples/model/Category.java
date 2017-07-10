@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.linkedin.android.spyglass.mentions.Mentionable;
-import com.linkedin.android.spyglass.tokenization.QueryToken;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
@@ -126,6 +125,7 @@ public class Category implements Mentionable {
 
                 @Override
                 public void onFailure(Call<List<Tags>> call, Throwable t) {
+                    gData.clear();
                     Log.d("sabarirangan",t.getMessage());
                 }
             });

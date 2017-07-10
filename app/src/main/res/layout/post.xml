@@ -17,6 +17,8 @@
             android:text="Find People"
             android:id="@+id/title"
             android:textSize="30dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -47,6 +49,7 @@
                     android:textSize="15sp"
                     android:text="anonymous"
                     android:id="@+id/username"
+                    android:textColor="@color/black"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
                 <TextView
                     android:textSize="10sp"
@@ -78,6 +81,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="3"
+                    android:textSize="15sp"
+                    android:layout_margin="5sp"
+                    android:textColor="@color/black"
                     android:text="@string/project_description_demo"
                     android:id="@+id/description" />
                 <TextView

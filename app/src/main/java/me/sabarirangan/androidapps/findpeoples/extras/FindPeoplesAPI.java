@@ -8,7 +8,6 @@ import me.sabarirangan.androidapps.findpeoples.model.NewProject;
 import me.sabarirangan.androidapps.findpeoples.model.NewReview;
 import me.sabarirangan.androidapps.findpeoples.model.Project;
 import me.sabarirangan.androidapps.findpeoples.model.Result;
-import me.sabarirangan.androidapps.findpeoples.model.Review;
 import me.sabarirangan.androidapps.findpeoples.model.Tags;
 import me.sabarirangan.androidapps.findpeoples.model.UserProfile;
 import retrofit2.Call;

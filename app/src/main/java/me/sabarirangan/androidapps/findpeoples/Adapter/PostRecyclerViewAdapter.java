@@ -2,10 +2,10 @@ package me.sabarirangan.androidapps.findpeoples.Adapter;
 
 
 import android.app.Activity;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -25,22 +24,17 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.pixplicity.easyprefs.library.Prefs;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
 import java.util.List;
 
 
 import io.realm.Realm;
 import me.sabarirangan.androidapps.findpeoples.R;
-import me.sabarirangan.androidapps.findpeoples.activities.MainActivity;
 import me.sabarirangan.androidapps.findpeoples.activities.ProjectDetail;
 import me.sabarirangan.androidapps.findpeoples.activities.UserProfileActivity;
 import me.sabarirangan.androidapps.findpeoples.extras.FindPeoplesAPI;
 import me.sabarirangan.androidapps.findpeoples.extras.OnLoadMoreListener;
 import me.sabarirangan.androidapps.findpeoples.model.NewReview;
 import me.sabarirangan.androidapps.findpeoples.model.Project;
-import me.sabarirangan.androidapps.findpeoples.model.Result;
-import me.sabarirangan.androidapps.findpeoples.model.Review;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -252,13 +246,13 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
 
             ((PostViewHolder)holder).tagrv.setAdapter(adapter);
-            if(p.getStatus()==3) {
+            if(p.getStatus()!=null&&p.getStatus()==3) {
                 ((PostViewHolder) holder).like.setImageResource(R.drawable.ic_like_active);
                 ((PostViewHolder) holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
                 ((PostViewHolder) holder).like.setTag(true);
                 ((PostViewHolder) holder).unlike.setTag(false);
             }
-            else if(p.getStatus()==1) {
+            else if(p.getStatus()!=null&&p.getStatus()==1) {
                 ((PostViewHolder) holder).unlike.setImageResource(R.drawable.ic_unlike_active);
                 ((PostViewHolder) holder).like.setImageResource(R.drawable.ic_like_inactive);
                 ((PostViewHolder) holder).unlike.setTag(true);
@@ -268,7 +262,13 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 @Override
                 public void onClick(View view) {
                     if( (!(Boolean)view.getTag()) ){
-                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_like_active);
+                        final boolean temp1= (boolean) ((PostViewHolder)holder).like.getTag();
+                        final boolean temp2=(boolean) ((PostViewHolder)holder).unlike.getTag();
+                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_active);
+                        view.setTag(true);
+                        ((AppCompatImageButton) ((PostViewHolder)holder).unlike).setImageResource(R.drawable.ic_unlike_inactive);
+                        ((PostViewHolder)holder).unlike.setTag(false);
+
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(context.getString(R.string.base_url))
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -276,8 +276,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
                         NewReview review=new NewReview();
                         review.setRating(3);
-                        if(p.getStatus()==0) {
-                            p.setStatus(3);
+                        if(p.getStatus()!=null&&p.getStatus()==0) {
                             Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
@@ -287,30 +286,59 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder).like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
+                                    if(temp2){
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
                                 }
                             });
                         }else{
-                            p.setStatus(3);
                             Call<NewReview> call=findPeoplesAPI.updatePostReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
+                                    realm.beginTransaction();
+                                    p.setStatus(3);
+                                    realm.commitTransaction();
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder).like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
+                                    if(temp2){
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
+
                                 }
                             });
                         }
-                        ((PostViewHolder)holder).unlike.setTag(false);
-                        ((AppCompatImageButton)((PostViewHolder)holder).unlike).setImageResource(R.drawable.ic_unlike_inactive);
-                        view.setTag(true);
                     }
                     else {
-                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_like_inactive);
+                        final boolean temp1= (boolean) view.getTag();
+                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_like_inactive);
+                        view.setTag(false);
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(context.getString(R.string.base_url))
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -318,36 +346,53 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
                         NewReview review=new NewReview();
                         review.setRating(2);
-                        if(p.getStatus()==0) {
-                            p.setStatus(2);
+                        if(p.getStatus()!=null&&p.getStatus()==0) {
                             Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                    realm.beginTransaction();
+                                    p.setStatus(2);
+                                    realm.commitTransaction();
 
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder).like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
                                 }
                             });
                         }else{
-                            p.setStatus(2);
                             Call<NewReview> call=findPeoplesAPI.updatePostReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                    realm.beginTransaction();
+                                    p.setStatus(2);
+                                    realm.commitTransaction();
 
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder).like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
                                 }
                             });
                         }
-                        view.setTag(false);
                     }
 
 
@@ -357,7 +402,12 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 @Override
                 public void onClick(View view) {
                     if( (!(Boolean)view.getTag()) ){
-                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_unlike_active);
+                        final boolean temp1= (boolean) ((PostViewHolder)holder).like.getTag();
+                        final boolean temp2=(boolean) ((PostViewHolder)holder).unlike.getTag();
+                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_active);
+                        view.setTag(true);
+                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                        ((PostViewHolder)holder).like.setTag(false);
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(context.getString(R.string.base_url))
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -365,41 +415,70 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
                         NewReview review=new NewReview();
                         review.setRating(1);
-                        if(p.getStatus()==0) {
-                            p.setStatus(1);
+                        if(p.getStatus()!=null&&p.getStatus()==0) {
                             Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
+                                    realm.beginTransaction();
+                                    p.setStatus(1);
+                                    realm.commitTransaction();
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder).like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
+                                    if(temp2){
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
                                 }
                             });
                         }else{
-                            p.setStatus(1);
                             Call<NewReview> call=findPeoplesAPI.updatePostReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
+                                    realm.beginTransaction();
+                                    p.setStatus(1);
+                                    realm.commitTransaction();
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp1){
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_active);
+                                        ((PostViewHolder)holder). like.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).like.setImageResource(R.drawable.ic_like_inactive);
+                                        ((PostViewHolder)holder).like.setTag(false);
+                                    }
+                                    if(temp2){
+                                        ((PostViewHolder)holder). unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
                                 }
                             });
                         }
-                        ((PostViewHolder)holder).like.setTag(false);
-                        ((AppCompatImageButton)((PostViewHolder)holder).like).setImageResource(R.drawable.ic_like_inactive);
-                        view.setTag(true);
                     }
                     else {
-                        ((AppCompatImageButton)view).setImageResource(R.drawable.ic_unlike_inactive);
+                        final boolean temp2= (boolean) view.getTag();
+                        ((AppCompatImageButton) view).setImageResource(R.drawable.ic_unlike_inactive);
+                        view.setTag(false);
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(context.getString(R.string.base_url))
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -407,36 +486,52 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                         FindPeoplesAPI findPeoplesAPI=retrofit.create(FindPeoplesAPI.class);
                         NewReview review=new NewReview();
                         review.setRating(2);
-                        if(p.getStatus()==0) {
-                            p.setStatus(2);
+                        if(p.getStatus()!=null&&p.getStatus()==0) {
                             Call<NewReview> call = findPeoplesAPI.postReview(Prefs.getString("token", ""), Integer.toString(p.getId()), review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
-
+                                    realm.beginTransaction();
+                                    p.setStatus(2);
+                                    realm.commitTransaction();
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp2){
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
                                 }
                             });
                         }else{
-                            p.setStatus(2);
                             Call<NewReview> call=findPeoplesAPI.updatePostReview(Prefs.getString("token",""),Integer.toString(p.getId()),review);
                             call.enqueue(new Callback<NewReview>() {
                                 @Override
                                 public void onResponse(Call<NewReview> call, Response<NewReview> response) {
+                                    realm.beginTransaction();
+                                    p.setStatus(2);
+                                    realm.commitTransaction();
 
                                 }
 
                                 @Override
                                 public void onFailure(Call<NewReview> call, Throwable t) {
-                                    //Toast.makeText(getApplicationContext(),"fail",Toast.LENGTH_LONG).show();
+                                    Snackbar.make(((Activity)context).findViewById(R.id.swipe_refresh_layout),"No Connection",Snackbar.LENGTH_SHORT).show();
+                                    if(temp2){
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_active);
+                                        ((PostViewHolder)holder).unlike.setTag(true);
+                                    }else{
+                                        ((PostViewHolder)holder).unlike.setImageResource(R.drawable.ic_unlike_inactive);
+                                        ((PostViewHolder)holder).unlike.setTag(false);
+                                    }
                                 }
                             });
                         }
-                        view.setTag(false);
                     }
 
 
