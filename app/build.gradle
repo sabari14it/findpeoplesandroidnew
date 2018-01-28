@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "me.sabarirangan.androidapps.findpeoples"
         minSdkVersion 16
@@ -53,6 +53,8 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.2.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

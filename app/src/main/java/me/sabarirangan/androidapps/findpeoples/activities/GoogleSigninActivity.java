@@ -99,6 +99,7 @@ public class GoogleSigninActivity extends AppCompatActivity implements
                 Prefs.putString("name", acct.getGivenName());
                 Prefs.putString("rollno",acct.getFamilyName());
                 Prefs.putString("email",acct.getEmail());
+                Log.d("autcode",authCode);
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(getString(R.string.base_url))
                         .addConverterFactory(GsonConverterFactory.create())
